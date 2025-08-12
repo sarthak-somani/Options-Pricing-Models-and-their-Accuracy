@@ -2,11 +2,10 @@ import pandas as pd
 import numpy as np
 import re
 
-# Load the raw CSV file downloaded from the NSE website.
-# The file path should point to where you've saved the original file.
+# Loading the  CSV file sourced from the NSE website.
 raw_file_path = 'Options-Pricing-Models-and-their-Accuracy/OPTIDX_NIFTY_CE_10-May-2025_TO_10-Aug-2025.csv'
 
-# Use low_memory=False to prevent potential data type warnings with large files.
+# low_memory=False to prevent potential data type warnings with large files.
 df = pd.read_csv(raw_file_path, low_memory=False)
 
 # --- 1. Clean Column Names ---
@@ -44,16 +43,14 @@ for col in numeric_cols:
     if col in df.columns:
         df[col] = pd.to_numeric(df[col], errors='coerce')
 
-# --- 3. Feature Engineering: Calculate Time to Expiration ---
+# --- 3. Calculate Time to Expiration ---
 # This calculates the time to expiration (T) in years, a required
 # input for the Black-Scholes model.
 # We add 1 day to the difference as per market convention.
 df['time_to_expiration'] = (df['expiry'] - df['date']).dt.days / 365.25
 
 # --- 4. Filter Data for Backtesting ---
-# A robust backtest requires clean, relevant data.
-
-# First, remove rows where critical data for the model is missing.
+# Remove rows where critical data for the model is missing.
 critical_cols = ['close', 'strike_price', 'underlying_value', 'time_to_expiration']
 df.dropna(subset=critical_cols, inplace=True)
 
@@ -64,7 +61,6 @@ df = df[(df['no_of_contracts'] > 0) & (df['open_int'] > 0)]
 df = df[df['time_to_expiration'] > 0]
 
 # --- 5. Save the Prepared Data ---
-# Save the final, cleaned DataFrame to a new CSV file.
 prepared_file_path = 'prepared_nifty_options_data.csv'
 df.to_csv(prepared_file_path, index=False)
 

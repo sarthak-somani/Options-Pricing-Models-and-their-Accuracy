@@ -4,7 +4,6 @@ from scipy.stats import norm
 import matplotlib.pyplot as plt
 
 # --- 1. Load the Prepared Data ---
-# This assumes you have the 'prepared_nifty_options_data.csv' file in the same directory.
 file_path = 'Options-Pricing-Models-and-their-Accuracy/prepared_nifty_options_data.csv'
 df = pd.read_csv(file_path, parse_dates=['date', 'expiry'])
 
@@ -23,7 +22,6 @@ df['volatility'] = df['log_return'].rolling(window=21).std() * np.sqrt(252)
 
 # Drop rows with NaN values created by the rolling calculation.
 df.dropna(inplace=True)
-
 
 # --- 3. Black-Scholes Model Implementation ---
 def black_scholes_call(S, K, T, r, sigma):
@@ -58,11 +56,23 @@ df['abs_percentage_error'] = np.abs(df['error'] / df['close']) * 100
 # Calculate Mean Absolute Percentage Error (MAPE).
 mape = df['abs_percentage_error'].mean()
 
+# Calculate Root Mean Squared Error (RMSE)
+mse = np.mean(df['error'] ** 2)
+rmse = np.sqrt(mse)
+
+# Calculate R-squared (coefficient of determination)
+ss_res = np.sum((df['close'] - df['bs_price']) ** 2)  # Sum of squares of residuals
+ss_tot = np.sum((df['close'] - df['close'].mean()) ** 2)  # Total sum of squares
+r_squared = 1 - (ss_res / ss_tot)
+
 print("--- Black-Scholes Model Accuracy Assessment ---")
 print(f"Risk-Free Rate (r) Used: {risk_free_rate:.4f} ({risk_free_rate*100:.2f}%)")
 print(f"Mean Absolute Percentage Error (MAPE): {mape:.2f}%")
+print(f"Root Mean Squared Error (RMSE): ₹{rmse:.2f}")
+print(f"R-squared (R²): {r_squared:.4f}")
 print("\nThis means, on average, the Black-Scholes model's price was off by about "
       f"{mape:.2f}% from the actual market price for the options in your dataset.")
+print(f"The model explains {r_squared*100:.1f}% of the variance in option prices.")
 
 # --- 6. Visualize the Results ---
 # To make the plot readable, we'll take a random sample of 500 data points.
