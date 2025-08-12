@@ -71,7 +71,7 @@ print(f"Mean Absolute Percentage Error (MAPE): {mape:.2f}%")
 print(f"Root Mean Squared Error (RMSE): ₹{rmse:.2f}")
 print(f"R-squared (R²): {r_squared:.4f}")
 print("\nThis means, on average, the Black-Scholes model's price was off by about "
-      f"{mape:.2f}% from the actual market price for the options in your dataset.")
+      f"{mape:.2f}% from the actual market price for the options in the dataset.")
 print(f"The model explains {r_squared*100:.1f}% of the variance in option prices.")
 
 # --- 6. Visualize the Results ---
